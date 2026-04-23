@@ -80,3 +80,21 @@
 .dark ::-webkit-scrollbar-thumb:hover {
     background: #64748b;
 }
+
+/* Interactive Cursor Glow */
+#cursor-glow {
+    position: fixed;
+    top: -500px;
+    left: -500px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 40%, transparent 60%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0; /* Keep it behind the glass card which is z-10 */
+}
+
+.dark #cursor-glow {
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(167, 139, 250, 0.05) 40%, transparent 60%);
+}

@@ -307,4 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
     retrieveCodeInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase();
     });
+
+    // --- Interactive Cursor Background Glow ---
+    const cursorGlow = document.getElementById('cursor-glow');
+    document.addEventListener('pointermove', (e) => {
+        cursorGlow.animate({
+            left: `${e.clientX}px`,
+            top: `${e.clientY}px`
+        }, { duration: 3000, fill: "forwards" });
+    });
 });
