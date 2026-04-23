@@ -1,6 +1,11 @@
 # 🚀 DropSpace AI
 
-**🌍 Live Demo:** [https://dropspace-ai-file-sharing-production.up.railway.app/](https://dropspace-ai-file-sharing-production.up.railway.app/)
+<p align="center">
+  <a href="https://dropspace-ai-file-sharing-production.up.railway.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Access_Live_Website-dropspace--ai-6366f1?style=for-the-badge&logoColor=white" alt="Live Website" />
+  </a>
+</p>
+<br>
 
 A fully functional, modern web application for sharing texts and files securely. Dropspace acts as a fast, temporary file and text drop. It generates a unique 6-character retrieval code for every upload and automatically securely deletes the contents after 24 hours.
 
