@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = e.target.value.toUpperCase();
     });
 
-    // --- Premium Particle & Ribbon Dispersion Engine ---
+    // --- Antigravity-Style Deep Void Network Engine ---
     const canvas = document.getElementById('canvas-trail');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -330,44 +330,84 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('pointermove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
-            
-            // Spawn advanced flowing particles
-            for(let i=0; i<4; i++) {
-                particles.push({
-                    x: mouse.x + (Math.random() - 0.5) * 10,
-                    y: mouse.y + (Math.random() - 0.5) * 10,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: (Math.random() - 0.5) * 2 - 0.5, // Slight upward drift
-                    life: 1,
-                    size: Math.random() * 5 + 3
-                });
-            }
         });
+        document.addEventListener('pointerleave', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+        
+        const isDark = () => document.documentElement.classList.contains('dark');
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.2;
+                this.vy = (Math.random() - 0.5) * 1.2;
+                this.size = Math.random() * 1.5 + 0.5;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = isDark() ? 'rgba(148, 163, 184, 0.4)' : 'rgba(99, 102, 241, 0.4)';
+                ctx.fill();
+            }
+        }
+        
+        // Populate node network
+        for (let i = 0; i < 90; i++) particles.push(new Particle());
         
         function animate() {
             ctx.clearRect(0, 0, width, height);
             
-            // Adapt glow to theme
-            const isDark = document.documentElement.classList.contains('dark');
-            // Using tailwind Indigo 500 / 400
-            const colorPrefix = isDark ? 'rgba(129, 140, 248,' : 'rgba(99, 102, 241,';
+            ctx.lineWidth = 0.6;
+            const connectionDist = 140;
+            const mouseDist = 180;
             
-            for(let i = 0; i < particles.length; i++) {
-                let p = particles[i];
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
                 
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `${colorPrefix} ${p.life * 0.4})`;
-                ctx.fill();
+                // Network inter-particle links
+                for (let j = i + 1; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.hypot(dx, dy);
+                    
+                    if (dist < connectionDist) {
+                        let opacity = 1 - (dist / connectionDist);
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = isDark() ? `rgba(148, 163, 184, ${opacity * 0.25})` : `rgba(99, 102, 241, ${opacity * 0.2})`;
+                        ctx.stroke();
+                    }
+                }
                 
-                // physics
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= 0.015; // smooth fade
-                p.size *= 0.96;  // shrink
+                // Mouse gravity interaction links
+                let dmx = particles[i].x - mouse.x;
+                let dmy = particles[i].y - mouse.y;
+                let dmDist = Math.hypot(dmx, dmy);
+                
+                if (dmDist < mouseDist) {
+                    let opacity = 1 - (dmDist / mouseDist);
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.strokeStyle = isDark() ? `rgba(167, 139, 250, ${opacity * 0.5})` : `rgba(79, 70, 229, ${opacity * 0.5})`;
+                    ctx.stroke();
+                    
+                    // Subtle organic gravity
+                    particles[i].x -= dmx * 0.005;
+                    particles[i].y -= dmy * 0.005;
+                }
             }
-            
-            particles = particles.filter(p => p.life > 0.02);
             requestAnimationFrame(animate);
         }
         requestAnimationFrame(animate);
