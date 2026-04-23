@@ -1,0 +1,19 @@
+# Python virtual environments
+venv/
+env/
+__pycache__/
+
+# Environment variables
+.env
+
+# Database file
+file_share.db
+instance/
+
+# Flask uploads
+uploads/
+!uploads/.gitkeep
+
+# IDEs
+.idea/
+.vscode/

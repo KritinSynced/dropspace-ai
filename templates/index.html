@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DropSpace - Secure Fast File Sharing</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-[Inter] transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="w-full p-4 flex justify-between items-center z-10 glass-nav">
+        <div class="flex items-center gap-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
+            <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> DropSpace
+        </div>
+        <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+            <i class="fa-solid fa-moon text-xl" id="themeIcon"></i>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="glass-card shadow-2xl rounded-2xl w-full max-w-lg overflow-hidden relative">
+            <!-- Background Glow -->
+            <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob"></div>
+            <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000"></div>
+
+            <div class="relative z-10 p-6 md:p-8">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Share & Retrieve</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Secure, temporary storage that auto-deletes in 24 hours.</p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                    <button class="tab-btn active-tab flex-1 py-2 text-center font-medium transition-colors" data-target="tab-text">
+                        <i class="fa-solid fa-align-left mr-1"></i> Text
+                    </button>
+                    <button class="tab-btn flex-1 py-2 text-center text-gray-500 dark:text-gray-400 font-medium transition-colors" data-target="tab-file">
+                        <i class="fa-solid fa-file-arrow-up mr-1"></i> File
+                    </button>
+                    <button class="tab-btn flex-1 py-2 text-center text-gray-500 dark:text-gray-400 font-medium transition-colors" data-target="tab-retrieve">
+                        <i class="fa-solid fa-download mr-1"></i> Retrieve
+                    </button>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertBox" class="hidden mb-4 p-3 rounded-lg text-sm font-medium transition-all duration-300"></div>
+
+                <!-- TEXT UPLOAD TAB -->
+                <div id="tab-text" class="tab-content transition-opacity duration-300">
+                    <textarea id="textContent" rows="5" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none mb-4" placeholder="Paste your text here..."></textarea>
+                    <button id="btnTextUpload" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <span>Generate Link</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- FILE UPLOAD TAB -->
+                <div id="tab-file" class="tab-content hidden transition-opacity duration-300">
+                    <div id="dropZone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer mb-4">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 dark:text-gray-500 mb-3 block"></i>
+                        <span class="text-sm text-gray-600 dark:text-gray-300 font-medium">Drag & Drop file here or</span>
+                        <span class="text-indigo-500 font-semibold cursor-pointer">Browse</span>
+                        <p class="text-xs text-gray-400 mt-2">Max limit: 10MB</p>
+                        <input type="file" id="fileInput" class="hidden" />
+                    </div>
+                    <div id="selectedFileInfo" class="hidden flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-lg mb-4">
+                        <span id="fileName" class="text-sm truncate mr-2"></span>
+                        <button id="clearFile" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div id="progressWrapper" class="hidden mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span>Uploading...</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <button id="btnFileUpload" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                        <span>Upload File</span>
+                        <i class="fa-solid fa-upload"></i>
+                    </button>
+                </div>
+
+                <!-- RETRIEVE TAB -->
+                <div id="tab-retrieve" class="tab-content hidden transition-opacity duration-300">
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="retrieveCode" class="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-center font-mono text-xl uppercase tracking-widest" placeholder="Enter Code" maxlength="8">
+                    </div>
+                    <button id="btnRetrieve" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2 mb-4">
+                        <span>Retrieve</span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    <!-- Retrieve Results Area -->
+                    <div id="retrieveResultArea" class="hidden border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
+                        <div id="retrievedTextWrapper" class="relative hidden">
+                            <h3 class="text-sm font-semibold mb-2 text-gray-500">Retrieved Text:</h3>
+                            <textarea id="retrievedText" rows="4" class="w-full bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-sm resize-none" readonly></textarea>
+                            <button id="copyRetrievedBtn" class="absolute top-8 right-2 p-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-300 transition" title="Copy to clipboard">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                        <div id="retrievedFileWrapper" class="hidden">
+                            <h3 class="text-sm font-semibold mb-2 text-gray-500">Retrieved File:</h3>
+                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 p-3 rounded-lg">
+                                <span id="retrievedFileName" class="text-sm truncate">...</span>
+                                <a id="downloadLink" href="#" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm transition font-semibold cursor-pointer">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Result (Generated Code) -->
+                <div id="successResult" class="hidden mt-6 text-center animate-fade-in">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Here is your retrieve code:</p>
+                    <div class="flex items-center justify-center gap-2">
+                        <div id="generatedCode" class="text-3xl font-mono tracking-widest font-bold text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 py-2 px-4 rounded-lg border border-gray-200 dark:border-gray-700">XXXXXX</div>
+                        <button id="copyCodeBtn" class="p-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition" title="Copy Code">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-rose-500 mt-4"><i class="fa-solid fa-clock mr-1"></i> Auto-deletes in 24 hours.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 text-sm text-gray-500 dark:text-gray-400">
+        Built by <a href="https://github.com/KritinSynced" target="_blank" class="text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors">KritinSynced</a>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
