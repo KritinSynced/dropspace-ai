@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DropSpace - Secure Fast File Sharing</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linejoin='round'><path d='M12 2L20.66 7v10L12 22l-8.66-5V7z'/><path d='M12 7l4 5-4 5-4-5 4-5z' fill='%23c084fc'/></svg>">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,8 +34,22 @@
 
     <!-- Navbar -->
     <nav class="w-full p-4 flex justify-between items-center z-10 glass-nav">
-        <div class="flex items-center gap-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
-            <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> DropSpace
+        <div class="flex items-center gap-3 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600 tracking-tight">
+            <!-- Custom SVG Logo -->
+            <div class="relative flex items-center justify-center w-8 h-8">
+                <div class="absolute inset-0 bg-indigo-500 blur-md opacity-40 rounded-full animate-pulse"></div>
+                <svg class="relative z-10 w-8 h-8 drop-shadow-lg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L20.66 7v10L12 22l-8.66-5V7z" stroke="url(#logoGrad)" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M12 7l4 5-4 5-4-5 4-5z" fill="url(#logoGrad)"/>
+                    <defs>
+                        <linearGradient id="logoGrad" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6366f1" />
+                            <stop offset="1" stop-color="#c084fc" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            DropSpace
         </div>
         <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
             <i class="fa-solid fa-moon text-xl" id="themeIcon"></i>
