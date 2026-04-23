@@ -21,13 +21,15 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=2">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-[Inter] transition-colors duration-300 min-h-screen flex flex-col relative">
 
-    <div id="cursor-glow"></div>
+    <!-- Premium Background Effects -->
+    <canvas id="canvas-trail" class="fixed inset-0 pointer-events-none z-[-1]"></canvas>
+    <div class="noise-bg pointer-events-none fixed inset-0 z-[-1] opacity-40"></div>
 
     <!-- Navbar -->
     <nav class="w-full p-4 flex justify-between items-center z-10 glass-nav">
@@ -41,10 +43,11 @@
 
     <!-- Main Content -->
     <main class="flex-grow flex items-center justify-center p-4">
-        <div class="glass-card shadow-2xl rounded-2xl w-full max-w-lg overflow-hidden relative">
+        <!-- Elevated Isolated Glass Card -->
+        <div class="glass-card shadow-2xl hover:shadow-indigo-500/20 rounded-2xl w-full max-w-lg overflow-hidden relative transition-all duration-500 hover:-translate-y-1 z-10 mx-auto">
             <!-- Background Glow -->
-            <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob"></div>
-            <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000"></div>
+            <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob pointer-events-none"></div>
+            <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000 pointer-events-none"></div>
 
             <div class="relative z-10 p-6 md:p-8">
                 <!-- Header -->
@@ -71,10 +74,10 @@
 
                 <!-- TEXT UPLOAD TAB -->
                 <div id="tab-text" class="tab-content transition-opacity duration-300">
-                    <textarea id="textContent" rows="5" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none mb-4" placeholder="Paste your text here..."></textarea>
-                    <button id="btnTextUpload" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                        <span>Generate Link</span>
-                        <i class="fa-solid fa-arrow-right"></i>
+                    <textarea id="textContent" rows="5" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none mb-4 transition-shadow focus:shadow-lg focus:shadow-indigo-500/20" placeholder="Paste your text here..."></textarea>
+                    <button id="btnTextUpload" class="ripple-btn relative overflow-hidden group w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/30 transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2">
+                        <span class="relative z-10">Generate Link</span>
+                        <i class="fa-solid fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"></i>
                     </button>
                 </div>
 
@@ -96,27 +99,30 @@
                     <div id="progressWrapper" class="hidden mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span>Uploading...</span>
-                            <span id="progressText">0%</span>
+                            <span id="progressText" class="font-bold text-indigo-500">0%</span>
                         </div>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full" style="width: 0%"></div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden shadow-inner">
+                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-200 ease-out relative">
+                                <!-- Inner glow on progress -->
+                                <div class="absolute top-0 right-0 bottom-0 left-0 bg-white/20 blur animate-pulse"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <button id="btnFileUpload" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hidden">
-                        <span>Upload File</span>
-                        <i class="fa-solid fa-upload"></i>
+                    <button id="btnFileUpload" class="ripple-btn relative overflow-hidden group w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/30 transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                        <span class="relative z-10">Upload File</span>
+                        <i class="fa-solid fa-upload relative z-10 group-hover:-translate-y-1 transition-transform"></i>
                     </button>
                 </div>
 
                 <!-- RETRIEVE TAB -->
                 <div id="tab-retrieve" class="tab-content hidden transition-opacity duration-300">
                     <div class="flex gap-2 mb-4">
-                        <input type="text" id="retrieveCode" class="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-center font-mono text-xl uppercase tracking-widest" placeholder="Enter Code" maxlength="8">
+                        <input type="text" id="retrieveCode" class="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-center font-mono text-xl uppercase tracking-widest transition-shadow focus:shadow-lg focus:shadow-emerald-500/20" placeholder="Enter Code" maxlength="8">
                     </div>
-                    <button id="btnRetrieve" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 flex items-center justify-center gap-2 mb-4">
-                        <span>Retrieve</span>
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                    <button id="btnRetrieve" class="ripple-btn relative overflow-hidden group w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-emerald-500/30 transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2 mb-4">
+                        <span class="relative z-10">Retrieve</span>
+                        <i class="fa-solid fa-magnifying-glass relative z-10 group-hover:scale-110 transition-transform"></i>
                     </button>
 
                     <!-- Retrieve Results Area -->
@@ -161,6 +167,6 @@
         Built by <a href="https://github.com/KritinSynced" target="_blank" class="text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors">KritinSynced</a>
     </footer>
 
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/main.js?v=2"></script>
 </body>
 </html>

@@ -308,12 +308,93 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = e.target.value.toUpperCase();
     });
 
-    // --- Interactive Cursor Background Glow ---
-    const cursorGlow = document.getElementById('cursor-glow');
-    document.addEventListener('pointermove', (e) => {
-        cursorGlow.animate({
-            left: `${e.clientX}px`,
-            top: `${e.clientY}px`
-        }, { duration: 3000, fill: "forwards" });
+    // --- Premium Particle & Ribbon Dispersion Engine ---
+    const canvas = document.getElementById('canvas-trail');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        let mouse = { x: -1000, y: -1000 };
+        
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        document.addEventListener('pointermove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            
+            // Spawn advanced flowing particles
+            for(let i=0; i<4; i++) {
+                particles.push({
+                    x: mouse.x + (Math.random() - 0.5) * 10,
+                    y: mouse.y + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2 - 0.5, // Slight upward drift
+                    life: 1,
+                    size: Math.random() * 5 + 3
+                });
+            }
+        });
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Adapt glow to theme
+            const isDark = document.documentElement.classList.contains('dark');
+            // Using tailwind Indigo 500 / 400
+            const colorPrefix = isDark ? 'rgba(129, 140, 248,' : 'rgba(99, 102, 241,';
+            
+            for(let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `${colorPrefix} ${p.life * 0.4})`;
+                ctx.fill();
+                
+                // physics
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.015; // smooth fade
+                p.size *= 0.96;  // shrink
+            }
+            
+            particles = particles.filter(p => p.life > 0.02);
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    }
+
+    // --- Material Ripple Interactivity ---
+    const buttons = document.querySelectorAll('.ripple-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('mousedown', function(e) {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple-circle');
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            // Dimensions
+            const size = Math.max(rect.width, rect.height) * 1.5;
+            ripple.style.width = ripple.style.height = `${size}px`;
+            // Center
+            ripple.style.marginTop = `-${size/2}px`;
+            ripple.style.marginLeft = `-${size/2}px`;
+            
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
     });
 });
